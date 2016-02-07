@@ -1,22 +1,24 @@
 ".source.js, .source.ts, .source.tsx, .source.js-semantic":
-  "if statement":
+  "if":
     prefix: "if"
     body: """
-    if (${1:condition}) {
-    \t${0}
+    if (${1}) {
+    \t${2}
     }
+    ${3}
     """
-  "else statement":
+  "else":
     prefix: "el"
     body: """
     else {
-    \t${0}
+    \t${1}
     }
+    ${2}
     """
   "if/else statement":
     prefix: "ife"
     body: """
-    if (${1:condition}) {
+    if (${1}) {
     \t${0}
     } else {
     \t
@@ -25,7 +27,7 @@
   "else if statement":
     prefix: "ei"
     body: """
-    else if (${1:condition}) {
+    else if (${1}) {
     \t${0}
     }
     """
@@ -39,7 +41,7 @@
   "for in loop":
     prefix: "fi"
     body: """
-    for (let ${1:key} in ${2:source}) {
+    for (let ${1} in ${2}) {
     \tif (${2:source}.hasOwnProperty(${1:key})) {
     \t\t${0}
     \t}
@@ -48,7 +50,7 @@
   "for of loop":
     prefix: "fo"
     body: """
-    for (let ${1:key} of ${2:source}) {
+    for (let ${1} of ${2}) {
     \t${0}
     }
     """
