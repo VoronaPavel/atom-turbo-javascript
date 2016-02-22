@@ -1,36 +1,40 @@
+{CompositeDisposable} = reqite 'atom'
+
 emptyLine = /^\s*$/
 objectLiteralLine = /^\s*[\w'"]+\s*\:\s*/m
 continuationLine = /[\{\(;,]\s*$/
 
+insertingNewLine = (action) -> (editor) ->
+  action editor
+  editor.insertNewlineBelow()
+
+endLineWith = (terminator) -> (editor) ->
+  editor.getCursors().forEach (cursor) ->
+    line = cursor.getCurrentBufferLine()
+    editor.moveToEndOfLine()
+
+    if !terminator
+      # guess the best terminator
+      terminator = if objectLiteralLine.test(line) then ',' else ';'
+
+    editor.insertText(terminator) if !continuationLine.test(line) and !emptyLine.test(line)
+
+commands =
+  'turbo-javascript:end-line-semicolon': -> endLineWith(';', false)
+  'turbo-javascript:end-line-comma': -> endLineWith(',', false)
+  'turbo-javascript:end-line-dot': -> endLineWith('.', false)
+  'turbo-javascript:end-line-colon': -> endLineWith(':', false)
+  'turbo-javascript:end-new-line': -> endLineWith('', true)
+  'turbo-javascript:wrap-block': -> wrapBlock()
+
 module.exports =
+  activate: ->
+    @subsctiptions = new CompositeDisposable
+    @subsctiptions.add atom.commands.add 'atom-text-editor', commands
 
-  activate: (state) ->
-    atom.commands.add 'atom-text-editor',
-      'turbo-javascript:end-line': => @endLine(';', false)
-    atom.commands.add 'atom-text-editor',
-      'turbo-javascript:end-line-comma': => @endLine(',', false)
-    atom.commands.add 'atom-text-editor',
-      'turbo-javascript:end-line-dot': => @endLine('.', false)
-    atom.commands.add 'atom-text-editor',
-      'turbo-javascript:end-line-colon': => @endLine(':', false)
-    atom.commands.add 'atom-text-editor',
-      'turbo-javascript:end-new-line': => @endLine('', true)
-    atom.commands.add 'atom-text-editor',
-      'turbo-javascript:wrap-block': => @wrapBlock()
-
-  endLine: (terminator, insertNewLine) ->
-    editor = atom.workspace.getActiveTextEditor()
-    editor.getCursors().forEach((cursor) ->
-      line = cursor.getCurrentBufferLine()
-      editor.moveToEndOfLine()
-
-      if !terminator
-        # guess the best terminator
-        terminator = if objectLiteralLine.test(line) then ',' else ';'
-
-      editor.insertText(terminator) if !continuationLine.test(line) and !emptyLine.test(line)
-      editor.insertNewlineBelow() if insertNewLine
-    )
+  deactivate: ->
+    @subsctiptions.despose()
+    @subsctiptions = null
 
   wrapBlock: () ->
     editor = atom.workspace.getActiveTextEditor()
