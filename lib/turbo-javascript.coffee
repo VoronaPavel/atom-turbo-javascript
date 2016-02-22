@@ -20,7 +20,7 @@ shouldTerminate = (line) ->
 endLineWith = (terminator) -> (editor) ->
   editor.getCursors().forEach (cursor) ->
     editor.moveToEndOfLine()
-    editor.insertText(terminator) if shouldTerminate(cursor.getCurrentBufferLine())
+    editor.insertText(terminator) if shouldTerminate cursor.getCurrentBufferLine()
 
 wrapBlock: () ->
   editor = atom.workspace.getActiveTextEditor()
@@ -49,11 +49,13 @@ wrapBlock: () ->
 
 commands =
   'turbo-javascript:end-line-semicolon': -> withActiveEditor endLineWith ';'
+  'turbo-javascript:end-line-colon': -> withActiveEditor endLineWith ':'
   'turbo-javascript:end-line-comma': -> withActiveEditor endLineWith ','
   'turbo-javascript:end-line-dot': -> withActiveEditor endLineWith '.'
-  'turbo-javascript:end-line-colon': -> withActiveEditor endLineWith ':'
-  'turbo-javascript:end-new-line': -> withActiveEditor insertingNewLine endLineWith ''
+
   'turbo-javascript:wrap-block': -> wrapBlock()
+
+  'turbo-javascript:end-new-line': -> withActiveEditor insertingNewLine endLineWith ''
 
 module.exports =
   activate: ->
