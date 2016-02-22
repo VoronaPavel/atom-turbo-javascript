@@ -8,16 +8,16 @@ insertingNewLine = (action) -> (editor) ->
   action editor
   editor.insertNewlineBelow()
 
+guessTerminator = (line) ->
+  if objectLiteralLine.test(line) then ',' else ';'
+
+shouldTerminate = (line) ->
+  not continuationLine.test(line) and not emptyLine.test(line)
+
 endLineWith = (terminator) -> (editor) ->
   editor.getCursors().forEach (cursor) ->
-    line = cursor.getCurrentBufferLine()
     editor.moveToEndOfLine()
-
-    if !terminator
-      # guess the best terminator
-      terminator = if objectLiteralLine.test(line) then ',' else ';'
-
-    editor.insertText(terminator) if !continuationLine.test(line) and !emptyLine.test(line)
+    editor.insertText(terminator) if shouldTerminate(cursor.getCurrentBufferLine())
 
 commands =
   'turbo-javascript:end-line-semicolon': -> endLineWith(';', false)
